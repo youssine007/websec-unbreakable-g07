@@ -1,1 +1,3 @@
-
+# Echt probleem, aanvaard: Newtonsoft.Json 12.0.1 (fix in 13.0.1), DoS bij diep geneste JSON.
+# Wordt opgelost met een update in een latere opdracht.
+CVE-2024-21907 exp:2026-12-31
