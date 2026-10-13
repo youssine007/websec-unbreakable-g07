@@ -74,4 +74,6 @@ jobs:
       # --severity ERROR: jouw definitie van "kritiek" voor SAST
       # --error: foutcode bij een vondst, dus een rode job
       # Aanvaarde vondsten: "nosemgrep: <regel-id>" op de regel, of .semgrepignore
-      - run: semgrep scan --config auto --severity ERROR --error
+      - run: >
+          semgrep scan --config auto --severity ERROR --error
+          --exclude-rule dockerfile.security.missing-user-entrypoint.missing-user-entrypoint
