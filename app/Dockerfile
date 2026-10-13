@@ -10,5 +10,4 @@ WORKDIR /app
 COPY --from=build /out ./
 EXPOSE 8080
 # Reden: echt probleem, aanvaard. De container draait als root; wordt opgelost in de hardening-opdracht.
-# nosemgrep: dockerfile.security.missing-user-entrypoint.missing-u
 ENTRYPOINT ["dotnet", "Unbreakable.dll"]
