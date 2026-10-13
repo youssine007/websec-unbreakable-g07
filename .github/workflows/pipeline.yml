@@ -87,7 +87,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: App bouwen en starten
-      - run: docker compose -p unbreakable up -d --build
+        run: docker compose -p unbreakable up -d --build
 
 
 
