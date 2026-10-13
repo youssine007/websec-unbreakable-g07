@@ -1,1 +1,48 @@
+name: pipeline
 
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    name: Secret scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  sca:
+    name: SCA
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Lockfile genereren (Trivy leest geen .csproj)
+        run: dotnet restore app --use-lock-file
+      - uses: aquasecurity/trivy-action@<laatste release>
+        with:
+          scan-type: fs
+          scan-ref: app
+          severity: CRITICAL
+          exit-code: '1'
+          trivyignores: .trivyignore
+
+  sast:
+    name: SAST
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+      - run: semgrep scan --config auto --severity ERROR --error
