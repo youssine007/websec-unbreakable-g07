@@ -1,25 +1,42 @@
 name: pipeline
 
+# Draait bij elke push naar main, en handmatig via de knop "Run workflow".
+# DSOMM Test-Intensity niv. 2: beveiligingstests lopen automatisch bij elke push.
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
+# Least privilege: het automatische GITHUB_TOKEN mag enkel code lezen.
 permissions:
   contents: read
 
 jobs:
+  # ---------------------------------------------------------------------------
+  # Secret scanning
+  # DSOMM: Static depth for infrastructure, niv. 1
+  #        (secrets zoeken in code en git-historiek; images volgen later)
+  # ---------------------------------------------------------------------------
   secrets:
     name: Secret scanning
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0          
+          fetch-depth: 0 # volledige historiek, anders mist Gitleaks oude commits
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Aanvaarde vondsten: fingerprints in .gitleaksignore, elk met een reden.
 
+  # ---------------------------------------------------------------------------
+  # SCA (bibliotheken met gekende kwetsbaarheden)
+  # DSOMM: Static depth for applications, niv. 2
+  #        (backend dependencies scannen op bekende kwetsbaarheden)
+  # DSOMM: Consolidation, niv. 1
+  #        (pipeline faalt bij ernst hoog of hoger)
+  # Beperking: jQuery en Bootstrap in app/wwwroot/lib/ worden hier niet gezien.
+  # ---------------------------------------------------------------------------
   sca:
     name: SCA
     runs-on: ubuntu-latest
@@ -28,16 +45,25 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-      - name: Lockfile genereren (Trivy leest geen .csproj)
+      # Trivy leest geen .csproj, wel packages.lock.json (incl. indirecte pakketten).
+      # Het lockfile bestaat enkel op de runner en komt niet in de repo.
+      - name: Lockfile genereren
         run: dotnet restore app --use-lock-file
-      - uses: aquasecurity/trivy-action@<laatste release>
+      # Gepind op commit-SHA (v0.36.0). Trivy-action had in maart 2026 een
+      # supply-chain-aanval, dus een tag is hier niet genoeg.
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: fs
           scan-ref: app
-          severity: CRITICAL
-          exit-code: '1'
-          trivyignores: .trivyignore
+          severity: HIGH,CRITICAL # jouw definitie van "kritiek"; zet op CRITICAL voor minder ruis
+          exit-code: '1' # vondst = foutcode = rode job
+          trivyignores: .trivyignore # aanvaarde CVE's, elk met een reden
 
+  # ---------------------------------------------------------------------------
+  # SAST (statische code-analyse)
+  # DSOMM: Static depth for applications, niv. 3
+  #        (statische code-analyse op frontend en backend)
+  # ---------------------------------------------------------------------------
   sast:
     name: SAST
     runs-on: ubuntu-latest
@@ -45,4 +71,7 @@ jobs:
       image: semgrep/semgrep
     steps:
       - uses: actions/checkout@v4
+      # --severity ERROR: jouw definitie van "kritiek" voor SAST
+      # --error: foutcode bij een vondst, dus een rode job
+      # Aanvaarde vondsten: "nosemgrep: <regel-id>" op de regel, of .semgrepignore
       - run: semgrep scan --config auto --severity ERROR --error
