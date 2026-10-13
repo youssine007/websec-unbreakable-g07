@@ -24,9 +24,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # volledige historiek, anders mist Gitleaks oude commits
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: TruffleHog (code en volledige git-historiek)
+        run: >
+          docker run --rm
+          --user "$(id -u):$(id -g)" -e HOME=/tmp
+          -v "$PWD:/repo"
+          trufflesecurity/trufflehog:3.95.5
+          git file:///repo
+          --fail --no-update
+          --results=verified,unknown,unverified
           # Aanvaarde vondsten: fingerprints in .gitleaksignore, elk met een reden.
 
   # ---------------------------------------------------------------------------
