@@ -31,9 +31,9 @@ jobs:
           -v "$PWD:/repo"
           trufflesecurity/trufflehog:3.95.5
           git file:///repo
+          --since-commit=965b4595d7249ea033838ac229bd5fe4d8afaf4e
           --fail --no-update
           --results=verified,unknown,unverified
-          # Aanvaarde vondsten: fingerprints in .gitleaksignore, elk met een reden.
 
   # ---------------------------------------------------------------------------
   # SCA (bibliotheken met gekende kwetsbaarheden)
