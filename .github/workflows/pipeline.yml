@@ -77,3 +77,19 @@ jobs:
       - run: >
           semgrep scan --config auto --severity ERROR --error
           --exclude-rule dockerfile.security.missing-user-entrypoint.missing-user-entrypoint
+
+  deploy:
+    name: Deploy
+    needs: [secrets, sca, sast]
+    if: github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    concurrency: deploy
+    steps:
+      - uses: actions/checkout@v4
+      - name: App bouwen en starten
+      - run: docker compose -p unbreakable up -d --build
+
+
+
+
+      
