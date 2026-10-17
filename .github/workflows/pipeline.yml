@@ -93,6 +93,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: App bouwen en starten
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: docker compose -p unbreakable up -d --build
 
 
