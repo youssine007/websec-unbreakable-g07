@@ -1,8 +1,9 @@
 services:
   app:
     build: ./app
-    ports:
-      - "8080:8080"
+    networks:
+      - bw-services
+      - appdb
     environment:
       ConnectionStrings__Unbreakable: "Host=db;Port=5432;Database=unbreakable;Username=unbreakable;Password=${DB_PASSWORD:?DB_PASSWORD ontbreekt}"
     depends_on:
@@ -11,6 +12,8 @@ services:
 
   db:
     image: postgres:17
+    networks:
+      - appdb
     environment:
       POSTGRES_DB: unbreakable
       POSTGRES_USER: unbreakable
@@ -21,3 +24,9 @@ services:
 
 volumes:
   dbdata:
+
+networks:
+  appdb:
+    internal: true
+  bw-services:
+    external: true 
