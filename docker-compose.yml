@@ -1,32 +1,35 @@
 services:
-  app:
-    build: ./app
-    networks:
-      - bw-services
-      - appdb
+  backend:
+    build: ./app/backend
+    networks: [bw-services, appdb]
     environment:
-      ConnectionStrings__Unbreakable: "Host=db;Port=5432;Database=unbreakable;Username=unbreakable;Password=${DB_PASSWORD:?DB_PASSWORD ontbreekt}"
-    depends_on:
-      - db
+      DATABASE_URL: "postgresql+psycopg://unbreakable:${DB_PASSWORD:?DB_PASSWORD ontbreekt}@db:5432/unbreakable"
+      ALLOWED_ORIGINS: "https://g07.ipv6.thelastgym.be"
+    depends_on: [db]
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./app/frontend
+      args:
+        VITE_API_BASE_URL: "https://g07.ipv6.thelastgym.be"
+    networks: [bw-services]
+    depends_on: [backend]
     restart: unless-stopped
 
   db:
     image: postgres:17
-    networks:
-      - appdb
+    networks: [appdb]
     environment:
       POSTGRES_DB: unbreakable
       POSTGRES_USER: unbreakable
       POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD ontbreekt}
-    volumes:
-      - dbdata:/var/lib/postgresql/data
+    volumes: [dbdata:/var/lib/postgresql/data]
     restart: unless-stopped
 
 volumes:
   dbdata:
 
 networks:
-  appdb:
-    internal: true
-  bw-services:
-    external: true 
+  appdb: { internal: true }
+  bw-services: { external: true }
