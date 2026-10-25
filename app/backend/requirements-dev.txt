@@ -1,0 +1,12 @@
+-r requirements.txt
+pytest==9.1.1
+pytest-asyncio==1.4.0
+httpx2==2.15.1
+websockets==14.2
+# Pinned explicitly, not just left to pytest's own unpinned `pygments>=2.7.2`
+# transitive requirement: OSV-Scanner's requirements.txt extractor (no
+# lockfile to resolve against) reports the lowest satisfying version it can
+# infer, not what pip actually installs, and flagged PYSEC-2023-117 and
+# PYSEC-2026-2987 against that inferred floor even though `pip install`
+# resolves pygments to 2.21.0 here. Pinning removes the ambiguity for both.
+pygments==2.21.0

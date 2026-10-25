@@ -1,0 +1,16 @@
+# Throwaway Postgres for running the backend test suite locally. Matches the
+# connection defaults in app/db.py (chat/chat@localhost:5432/chat) so no
+# DATABASE_URL override is needed for a local `pytest` run.
+#
+# Not used by the real app or by docker-compose.yml (deploy): this is test-only.
+services:
+  test-db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: chat
+      POSTGRES_USER: chat
+      POSTGRES_PASSWORD: chat
+    ports:
+      - "5432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
