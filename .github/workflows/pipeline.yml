@@ -38,23 +38,17 @@ jobs:
   # ---------------------------------------------------------------------------
   # SCA (bibliotheken met gekende kwetsbaarheden)
   # DSOMM: Static depth for applications, niv. 2
-  #        (backend dependencies scannen op bekende kwetsbaarheden)
+  #        (backend- en frontend-dependencies scannen op bekende kwetsbaarheden)
   # DSOMM: Consolidation, niv. 1
   #        (pipeline faalt bij ernst hoog of hoger)
-  # Beperking: jQuery en Bootstrap in app/wwwroot/lib/ worden hier niet gezien.
+  # Trivy leest de lockfiles rechtstreeks uit de repo: requirements.txt (Python)
+  # en package-lock.json (npm). Geen aparte lockfile-stap meer nodig.
   # ---------------------------------------------------------------------------
   sca:
     name: SCA
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-      # Trivy leest geen .csproj, wel packages.lock.json (incl. indirecte pakketten).
-      # Het lockfile bestaat enkel op de runner en komt niet in de repo.
-      - name: Lockfile genereren
-        run: dotnet restore app --use-lock-file
       # Gepind op commit-SHA (v0.36.0). Trivy-action had in maart 2026 een
       # supply-chain-aanval, dus een tag is hier niet genoeg.
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
@@ -96,8 +90,3 @@ jobs:
         env:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: docker compose -p unbreakable up -d --build
-
-
-
-
-      
