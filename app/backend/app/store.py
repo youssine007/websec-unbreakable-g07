@@ -37,9 +37,9 @@ class ChatStore:
                 return []
             return [Message.model_validate(m) for m in row.messages]
 
-    def add_message(self, channel_id: str, sender: str, text: str) -> Message:
+    def add_message(self, channel_id: str, sender: str, text: str, line:int, mac:str) -> Message:
         with get_session() as session:
-            row = MessageRow(channel_id=channel_id, sender=sender, text=text)
+            row = MessageRow(channel_id=channel_id, sender=sender, text=text, line=line, mac=mac)
             session.add(row)
             session.commit()
             session.refresh(row)

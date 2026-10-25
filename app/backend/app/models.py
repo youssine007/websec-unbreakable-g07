@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
-from sqlalchemy import DateTime, ForeignKey, String
+from sqlalchemy import DateTime, ForeignKey, String, Integer 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .db import Base
@@ -39,6 +39,8 @@ class MessageRow(Base):
     channel_id: Mapped[str] = mapped_column(ForeignKey("channels.id"), nullable=False, index=True)
     sender: Mapped[str] = mapped_column(String, nullable=False)
     text: Mapped[str] = mapped_column(String, nullable=False)
+    line: Mapped[int] = mapped_column(Integer, nullable=False)
+    mac: Mapped[str] = mapped_column(String,nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
@@ -51,6 +53,8 @@ class Message(BaseModel):
     channel_id: str
     sender: str
     text: str
+    line: int
+    mac: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     model_config = {"from_attributes": True}
@@ -59,6 +63,8 @@ class Message(BaseModel):
 class SendMessageRequest(BaseModel):
     sender: str
     text: str
+    line: int
+    mac:str 
 
 
 class Channel(BaseModel):

@@ -53,7 +53,7 @@ def list_messages(user_a: str, user_b: str) -> list[Message]:
 @app.post("/api/channels/{user_a}/{user_b}/messages")
 async def send_message(user_a: str, user_b: str, body: SendMessageRequest) -> Message:
     channel = store.get_or_create_channel(user_a, user_b)
-    message = store.add_message(channel.id, body.sender, body.text)
+    message = store.add_message(channel.id, body.sender, body.text,body.line,body.mac)
     await _broadcast(channel.id, message)
     return message
 

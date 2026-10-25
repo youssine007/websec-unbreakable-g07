@@ -5,7 +5,7 @@ import * as api from "@/lib/api"
 import { ChatScreen } from "./ChatScreen"
 
 function message(id: string, sender: string, text: string) {
-  return { id, channel_id: "alice__bob", sender, text, created_at: "2026-01-01T00:00:00Z" }
+  return { id, channel_id: "alice__bob", sender, text, line: 1, mac: "00", created_at: "2026-01-01T00:00:00Z" }
 }
 
 let onMessageCallback: ((msg: ReturnType<typeof message>) => void) | undefined

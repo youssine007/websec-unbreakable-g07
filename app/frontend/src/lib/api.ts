@@ -7,6 +7,8 @@ export interface ApiMessage {
   sender: string
   text: string
   created_at: string
+  mac: string
+  line: number 
 }
 
 export async function getOrCreateChannel(userA: string, userB: string) {
@@ -23,13 +25,13 @@ export async function listMessages(userA: string, userB: string) {
   return res.json() as Promise<ApiMessage[]>
 }
 
-export async function sendMessage(userA: string, userB: string, sender: string, text: string) {
+export async function sendMessage(userA: string, userB: string, sender: string, text: string, line: number, mac: string) {
   const res = await fetch(
     `${API_BASE}/api/channels/${encodeURIComponent(userA)}/${encodeURIComponent(userB)}/messages`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sender, text }),
+      body: JSON.stringify({ sender, text, line, mac }),
     }
   )
   if (!res.ok) throw new Error(`Failed to send message: ${res.status}`)
