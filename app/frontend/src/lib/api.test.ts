@@ -49,19 +49,19 @@ describe("sendMessage", () => {
     const sent = { id: "1", channel_id: "alice__bob", sender: "alice", text: "hi", created_at: "now" }
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(jsonResponse(sent))
 
-    const result = await sendMessage("alice", "bob", "alice", "hi")
+  const result = await sendMessage("alice", "bob", "alice", "hi", 1, "deadbeef")
 
-    expect(fetchMock).toHaveBeenCalledWith(`${API_BASE}/api/channels/alice/bob/messages`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sender: "alice", text: "hi" }),
-    })
+expect(fetchMock).toHaveBeenCalledWith(`${API_BASE}/api/channels/alice/bob/messages`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ sender: "alice", text: "hi", line: 1, mac: "deadbeef" }),
+})
     expect(result).toEqual(sent)
   })
 
   it("throws when the response is not ok", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(jsonResponse({}, false, 400))
-    await expect(sendMessage("alice", "bob", "alice", "hi")).rejects.toThrow("Failed to send message: 400")
+    await expect(sendMessage("alice", "bob", "alice", "hi", 1, "deadbeef")).rejects.toThrow("Failed to send message: 400")
   })
 })
 
