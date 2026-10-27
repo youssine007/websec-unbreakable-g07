@@ -89,4 +89,4 @@ jobs:
       - name: App bouwen en starten
         env:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        run: docker compose -p unbreakable up -d --build
+        run: docker compose -v -p unbreakable up -d --build
