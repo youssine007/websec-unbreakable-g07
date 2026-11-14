@@ -33,6 +33,7 @@ services:
     restart: unless-stopped
 
   keycloak:
+    mem_limit: 1g
     image: quay.io/keycloak/keycloak:26.8.2
     command: start
     networks: [bw-services, kcdb]
@@ -47,6 +48,7 @@ services:
       KC_HTTP_RELATIVE_PATH: /auth
       KC_HTTP_ENABLED: "true"
       KC_PROXY_HEADERS: xforwarded
+      JAVA_OPTS_KC_HEAP: "-Xms256m -Xmx512m"
     depends_on: [keycloak-db]
     restart: unless-stopped
 
