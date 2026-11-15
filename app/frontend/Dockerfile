@@ -7,6 +7,10 @@ COPY . ./
 # at image build, not container start.
 ARG VITE_API_BASE_URL=http://localhost:8123
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+ARG VITE_OIDC_AUTHORITY
+ENV VITE_OIDC_AUTHORITY=${VITE_OIDC_AUTHORITY}
+ARG VITE_OIDC_CLIENT_ID
+ENV VITE_OIDC_CLIENT_ID=${VITE_OIDC_CLIENT_ID}
 RUN npm run build
 
 FROM nginxinc/nginx-unprivileged:1.31.7-alpine3.24
