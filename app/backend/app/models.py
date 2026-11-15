@@ -61,7 +61,6 @@ class Message(BaseModel):
 
 
 class SendMessageRequest(BaseModel):
-    sender: str
     text: str
     line: int
     mac:str 
