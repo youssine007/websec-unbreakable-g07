@@ -5,3 +5,4 @@ h11==0.16.0
 idna==3.20
 sqlalchemy==2.0.51
 psycopg[binary]==3.3.4
+PyJWT[crypto]
