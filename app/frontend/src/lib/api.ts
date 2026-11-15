@@ -1,4 +1,4 @@
-eimport { getAccessToken, userManager } from "./auth"
+import { getAccessToken, userManager } from "./auth"
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8123"
 const WS_BASE = API_BASE.replace(/^http/, "ws")
